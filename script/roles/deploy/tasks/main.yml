@@ -19,7 +19,7 @@
 - name: deploy application
   community.docker.docker_container:
     name: eco-benchmark-application
-    image: "jdrouet/eco-benchmark:service-{{ service }}"
+    image: "ghcr.io/boavizta/ecobenchmark-4-builder-efootprint:service-{{ service }}"
     state: started
     network_mode: host
     restart_policy: unless-stopped

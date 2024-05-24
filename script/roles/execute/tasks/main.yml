@@ -2,7 +2,7 @@
 - name: start runner
   community.docker.docker_container:
     name: eco-benchmark-runner
-    image: "jdrouet/eco-benchmark:runner"
+    image: "ghcr.io/boavizta/ecobenchmark-4-builder-efootprint:runner"
     detach: no
     user: "1000:1000"
     volumes:
