@@ -1,0 +1,10 @@
+database_host: "{{ hostvars[inventory_hostname].ansible_hostname}}"
+database_username: postgres
+database_password: password
+database_name: postgres
+database_url: "jdbc:postgresql://{{ database_host }}:5432/{{ database_name }}"
+
+
+virtual_users: 20
+duration: 600
+run_id: overrideme
