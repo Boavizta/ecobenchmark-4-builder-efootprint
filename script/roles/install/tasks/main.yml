@@ -6,6 +6,15 @@
     - install
     - python
 
+# see https://stackoverflow.com/questions/75608323/how-do-i-solve-error-externally-managed-environment-every-time-i-use-pip-3
+- name: Remove externaly-managed error for docker-py
+  ansible.builtin.file:
+    path: /usr/lib/python3.11/EXTERNALLY-MANAGED
+    state: absent
+  tags:
+    - install
+    - docker
+
 - name: install docker-py
   pip:
     name: docker
