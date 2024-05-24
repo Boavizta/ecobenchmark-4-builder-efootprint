@@ -25,25 +25,16 @@ function run() {
   done
 }
 
-run go-pgx INIT
 
-run go-pgx DATA_WRITE
+function run_all_services() {
+  folder_path=../service
+  folder_names=$(find $folder_path -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+  for folder_name in $folder_names; do
+    run $folder_name INIT
+    run $folder_name DATA_WRITE
+    run $folder_name DATA_LIST
+    run $folder_name DATA_SIMPLE_ANALYTIC
+  done
+}
 
-run go-pgx DATA_LIST
-
-run go-pgx DATA_SIMPLE_ANALYTIC
-
-run jvm-kotlin-spring
-
-run jvm-java-quarkus
-
-run jvm-java-quarkus-reactive
-
-run native-java-quarkus
-
-run node-express-sequelize
-
-run php-symfony
-
-run rust-actix-sqlx
-
+run_all_services
