@@ -13,7 +13,7 @@ export ORG=${ORG:-boavizta}
 
 echo "Building database"
 
-docker buildx build --push --tag "$ORG/eco-benchmark:database" ./migrations
+docker buildx build --push --tag "ghcr.io/$ORG/ecobenchmark-4-builder-efootprint:database" ./migrations
 
 exit 0
 

@@ -12,6 +12,6 @@ fi
 export ORG=${ORG:-boavizta}
 
 
-docker buildx build --push --tag "$ORG/ecobenchmark-4-builder-efootprint:runner" ./runner
+docker buildx build --push --tag "ghcr.io/$ORG/ecobenchmark-4-builder-efootprint:runner" ./runner
 
 exit 0
