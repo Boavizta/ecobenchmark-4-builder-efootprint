@@ -16,7 +16,7 @@ function run_once() {
     -i script/inventory-$1 \
     script/site.yml \
     --skip-tags install \
-    --extra-vars "$extra_vars service=$1 use_case=$2 output_directory=$PWD/results run_id=$run_id"
+    --extra-vars "$extra_vars service=$1 scenario=$2 output_directory=$PWD/results run_id=$run_id"
 }
 
 function run() {
@@ -25,19 +25,25 @@ function run() {
   done
 }
 
-run go-pgx no-index
+run go-pgx INIT
 
-run jvm-kotlin-spring no-index
+run go-pgx DATA_WRITE
 
-run jvm-java-quarkus no-index
+run go-pgx DATA_LIST
 
-run jvm-java-quarkus-reactive no-index
+run go-pgx DATA_SIMPLE_ANALYTIC
 
-run native-java-quarkus no-index
+run jvm-kotlin-spring
 
-run node-express-sequelize no-index
+run jvm-java-quarkus
 
-run php-symfony no-index
+run jvm-java-quarkus-reactive
 
-run rust-actix-sqlx no-index
+run native-java-quarkus
+
+run node-express-sequelize
+
+run php-symfony
+
+run rust-actix-sqlx
 
