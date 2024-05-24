@@ -1,4 +1,4 @@
-database_host: "{{ hostvars[inventory_hostname].ansible_hostname}}"
+database_host: "{{ hostvars[groups['server_database_host'][0]]}}"
 database_username: postgres
 database_password: password
 database_name: postgres
