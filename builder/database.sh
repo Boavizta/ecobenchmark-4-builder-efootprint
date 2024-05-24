@@ -6,13 +6,10 @@ if test "$#" -ne 0; then
   echo
   echo "Usage: ./builder/database.sh"
   echo
-  echo "Available tags:"
-  echo "default (the use case to compare to)"
-  echo
   exit 1
 fi
 
-export ORG=${ORG:-jdrouet}
+export ORG=${ORG:-boavizta}
 
 echo "Building database"
 
