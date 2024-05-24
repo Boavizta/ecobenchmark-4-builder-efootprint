@@ -30,10 +30,12 @@ function run_all_services() {
   folder_path=../service
   folder_names=$(find $folder_path -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
   for folder_name in $folder_names; do
-    run $folder_name INIT
-    run $folder_name DATA_WRITE
-    run $folder_name DATA_LIST
-    run $folder_name DATA_SIMPLE_ANALYTIC
+    if [[ $folder_name != *mysql ]]; then #temp patch
+      run $folder_name INIT
+      run $folder_name DATA_WRITE
+      run $folder_name DATA_LIST
+      run $folder_name DATA_SIMPLE_ANALYTIC
+    fi
   done
 }
 
