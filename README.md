@@ -28,10 +28,12 @@ The repository :
 
 To fill a e-footprint builder, we need to gather this data by builder :
 
+- job_type
+- technologies
 - data_upload
 - data_download
 - cpu_needed
-- cpu_needed
+- ram_needed
 - request_duration
 
 Data is input as a set of value and unit in the builder, so all data should go with a unit.
