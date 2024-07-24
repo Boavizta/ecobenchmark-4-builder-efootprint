@@ -12,7 +12,9 @@
       - "/config/scenario-{{ scenario }}.js"
       - "-e"
       - "SERVER_HOST={{ server_application_host }}:8080"
-      - "--summary-export"
-      - "/tmp/{{ service }}_{{ scenario }}_{{ run_id }}_k6-summary.json"
-      # - "--out"
-      # - "json=/tmp/{{ service }}-{{ scenario }}-{{ run_id }}-k6.json"
+- set_fact:
+    account_id: "{{ command_output.stdout }}"
+- shell: "echo $ACCOUNT_ID"
+  environment:
+    ACCOUNT_ID: "{{ account_id }}"
+
