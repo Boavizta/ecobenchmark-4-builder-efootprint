@@ -2,7 +2,7 @@
 - name: deploy database
   community.docker.docker_container:
     name: eco-benchmark-database
-    image: "jdrouet/eco-benchmark:database-{{ use_case }}"
+    image: "ghcr.io/boavizta/ecobenchmark-4-builder-efootprint:database"
     state: started
     network_mode: host
     restart_policy: unless-stopped
@@ -19,7 +19,7 @@
 - name: deploy application
   community.docker.docker_container:
     name: eco-benchmark-application
-    image: "jdrouet/eco-benchmark:service-{{ service }}-{{ use_case }}"
+    image: "ghcr.io/boavizta/ecobenchmark-4-builder-efootprint:service-{{ service }}"
     state: started
     network_mode: host
     restart_policy: unless-stopped
@@ -53,7 +53,7 @@
       - "file"
       - "--format"
       - "json"
-      - "/tmp/{{ service }}_{{ use_case }}_{{ run_id }}_docker-activity-{{ instance_type }}.json"
+      - "/tmp/{{ service }}_{{ scenario }}_{{ run_id }}_docker-activity-{{ instance_type }}.json"
   tags:
     - deploy
   when: instance_type == "application" or instance_type == "database"
@@ -76,7 +76,7 @@
       - "-n"
       - "100000000"
       - "-f"
-      - "/tmp/{{ service }}_{{ use_case }}_{{ run_id }}_scaphandre-{{ instance_type }}.json"
+      - "/tmp/{{ service }}_{{ scenario }}_{{ run_id }}_scaphandre-{{ instance_type }}.json"
   tags:
     - deploy
   when: instance_type == "application" or instance_type == "database"
