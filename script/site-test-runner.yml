@@ -1,0 +1,8 @@
+---
+- hosts: runner
+  roles:
+    - execute
+
+- hosts: all
+  roles:
+    - gathering

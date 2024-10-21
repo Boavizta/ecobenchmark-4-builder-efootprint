@@ -12,9 +12,9 @@
       - "/config/scenario-{{ scenario }}.js"
       - "-e"
       - "SERVER_HOST={{ server_application_host }}:8080"
-- set_fact:
-    account_id: "{{ command_output.stdout }}"
-- shell: "echo $ACCOUNT_ID"
-  environment:
-    ACCOUNT_ID: "{{ account_id }}"
+#- set_fact:
+#    account_id: "{{ command_output.stdout }}"
+#- shell: "echo $ACCOUNT_ID"
+#  environment:
+#    ACCOUNT_ID: "{{ account_id }}"
 
