@@ -13,9 +13,9 @@ function run_test() {
   extra_vars="$extra_vars server_runner_user=$SERVER_RUNNER_USER"
   ansible-playbook \
     -u debian \
-    -i inventory.ini \
     -i hosts \
     -i inventory-$1 \
+    -v \
     site-test-runner.yml \
     --skip-tags install \
     --extra-vars "$extra_vars service=$1 scenario=$2 output_directory=$PWD/results run_id=$run_id"
@@ -32,7 +32,6 @@ function run_init_env() {
   extra_vars="$extra_vars server_runner_user=$SERVER_RUNNER_USER"
   ansible-playbook \
     -u debian \
-    -i inventory.ini \
     -i hosts \
     -i inventory-$1 \
     site-init-env.yml \
@@ -57,9 +56,9 @@ function run_init() {
   extra_vars="$extra_vars server_runner_user=$SERVER_RUNNER_USER"
   ansible-playbook \
     -u debian \
-    -i inventory.ini \
     -i hosts \
     -i inventory-$1 \
+    -v \
     site-init-runner.yml \
     --skip-tags install \
     --extra-vars "$extra_vars service=$1 scenario=$2 output_directory=$PWD/results run_id=$run_id"
