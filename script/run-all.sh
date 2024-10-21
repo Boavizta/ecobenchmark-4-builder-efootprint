@@ -71,11 +71,12 @@ function run_all_services() {
   for folder_name in $folder_names; do
     if [[ $folder_name != *mysql ]]; then #temp patch
       #eval "run $folder_name"
-      #run_init_env $folder_name #deploy architecture
+      run_init_env $folder_name #deploy architecture
       run_init $folder_name INIT #Init account
-      run_test $folder_name DATA_WRITE #Run test 1
-      run_test $folder_name DATA_LIST #Run test 1
-      run_test $folder_name DATA_SIMPLE_ANALYTIC #Run test 1
+      #run_test $folder_name DATA_WRITE #Run test 1
+      #run_test $folder_name DATA_LIST #Run test 1
+      #run_test $folder_name DATA_SIMPLE_ANALYTIC #Run test 1
+      exit
     fi
   done
 }

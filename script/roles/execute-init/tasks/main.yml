@@ -12,9 +12,14 @@
       - "/config/scenario-{{ scenario }}.js"
       - "-e"
       - "SERVER_HOST={{ server_application_host }}:8080"
-#- set_fact:
-#    account_id: "{{ command_output.stdout }}"
-#- shell: "echo $ACCOUNT_ID"
+- debug: msg="{{ansible_env.HOME}}"
+#    output_logs: true
+#    log_driver: local
+#  register: output
+#- debug: msg="{{output.container.Output}}"
+#    set_fact:
+#      account_id: "{{ command_output.stdout }}"
+#- shell: "echo $account_id"
 #  environment:
 #    ACCOUNT_ID: "{{ account_id }}"
 
