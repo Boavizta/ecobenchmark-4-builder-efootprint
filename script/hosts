@@ -1,11 +1,11 @@
 [application]
-app_server ansible_host="{{ server_application_host }}" ansible_user="{{ server_application_user }}"
+app_server ansible_host="{{ server_application_host }}"
 
 [database]
-db_server ansible_host="{{ server_database_host }}" ansible_user="{{ server_database_user }}"
+db_server ansible_host="{{ server_database_host }}"
 
 [runner]
-run_server ansible_host="{{ server_runner_host }}" ansible_user="{{ server_runner_user }}"
+run_server ansible_host="{{ server_runner_host }}"
 
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3

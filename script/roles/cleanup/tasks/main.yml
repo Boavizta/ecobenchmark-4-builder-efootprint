@@ -21,7 +21,7 @@
     command:
       - "/bin/rm"
       - "-f"
-      - "/tmp/{{ service }}_{{ use_case }}_{{ run_id }}*"
+      - "/tmp/{{ service }}_{{ scenario }}_{{ run_id }}*"
   tags:
     - cleanup
 

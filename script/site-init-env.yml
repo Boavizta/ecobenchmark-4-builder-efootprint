@@ -12,11 +12,3 @@
   roles:
     - cleanup
     - deploy
-
-- hosts: runner
-  roles:
-    - execute
-
-- hosts: all
-  roles:
-    - gathering

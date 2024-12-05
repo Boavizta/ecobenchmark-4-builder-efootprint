@@ -15,3 +15,6 @@ ansible-playbook -u THE_USER_TO_CONNECT_YOUR_SERVERS -i hosts-default site.yml -
 
 To switch use cases, just use a different inventory (in this case `hosts-default`).
 
+```bash
+SERVER_APPLICATION_HOST=146.59.196.189 SERVER_DATABASE_HOST=5.135.139.189 SERVER_RUNNER_HOST=51.68.34.240 ./run-all.sh
+```

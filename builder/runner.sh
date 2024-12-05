@@ -1,23 +1,17 @@
 
 #!/bin/bash
 
-if test "$#" -ne 1; then
+if test "$#" -ne 0; then
   echo "Invalid number of arguments..."
   echo
-  echo "Usage: ./builder/runner.sh <use_case>"
-  echo
-  echo "Available tags:"
-  echo "default (the use case to compare to)"
+  echo "Usage: ./builder/runner.sh"
   echo
   exit 1
 fi
 
-export ORG=${ORG:-jdrouet}
-export use_case=$1
+export ORG=${ORG:-boavizta}
 
-echo "Building runner for use case $use_case"
 
-docker buildx build --push --tag "$ORG/eco-benchmark:runner-$use_case" ./runner
+docker buildx build --push --tag "ghcr.io/$ORG/ecobenchmark-4-builder-efootprint:runner" ./runner
 
 exit 0
-
