@@ -51,9 +51,9 @@ public class GetListsResource {
 
                         ListResponse mappedList = listResponseMap.putIfAbsent(listResponse.getId(), listResponse);
 
-                        if (mappedList != null) {
-                            TaskResponse taskResponse = TaskResponse.from(row);
-                            List<TaskResponse> tasks = mappedList.getTasks();
+                        TaskResponse taskResponse = TaskResponse.from(row);
+                        if (taskResponse.getId() != null) {
+                            List<TaskResponse> tasks = (mappedList != null ? mappedList : listResponse).getTasks();
                             tasks.add(taskResponse);
                         }
 

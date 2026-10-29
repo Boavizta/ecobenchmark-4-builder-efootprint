@@ -192,6 +192,37 @@ reference campaign**. Exact resolved images are recorded. The Ubuntu base and
 provisioned apt packages may evolve. Establish a digest/package lock before publishing
 reference comparisons. No unsupported energy collector or dashboard is installed.
 
+## Service compatibility smoke benchmarks
+
+With a local Docker daemon, run one short mixed write/list/statistics benchmark
+against every implemented service image:
+
+```sh
+python3 benchmark/smoke_services.py --output results/service-smoke
+# Rebuild and rerun only a failed service, preserving earlier attempts:
+python3 benchmark/smoke_services.py --service go-pgx-pg --output results/service-smoke
+```
+
+Each service gets a fresh disposable PostgreSQL or MySQL database on a uniquely
+named Docker network. Only the application's healthcheck port is exposed, on
+localhost. Containers and their anonymous volumes are removed after each run;
+existing databases, Compose projects, and volumes are not touched. Builds use
+the service's real Dockerfile and runtime configuration from its Compose file.
+
+The default is 10 seconds / 1 VU with strict HTTP and response-content checks,
+including empty lists, persisted tasks, pagination, and fractional statistics.
+Persisted task IDs, names, and descriptions must match the preceding writes.
+`status.json` preserves every attempt, `summary.md` shows the latest status, and
+per-attempt directories contain build/application/database/k6 logs and metrics.
+Each attempt also saves its scenario and SHA-256 hash. The command exits nonzero
+if any selected service fails. Do not run concurrent processes against the same
+output directory; use separate directories for independent batches.
+Ruby is excluded because its directory contains no implementation.
+
+These are **local functional load checks**, not comparable performance or energy
+measurements. They are separate from the Lima/SSH reference benchmark lifecycle.
+They do not replace exhaustive API conformance tests.
+
 ## Tests
 
 ```sh

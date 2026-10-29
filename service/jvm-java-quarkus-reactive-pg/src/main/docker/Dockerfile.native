@@ -26,7 +26,7 @@ COPY src /code/src
 RUN ./mvnw package -Pnative -Dmaven.test.skip=true
 
 ## Stage 2 : create the docker final image
-FROM registry.access.redhat.com/ubi9/ubi-minimal:9
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
 WORKDIR /work/
 RUN chown 1001 /work \
     && chmod "g+rwX" /work \

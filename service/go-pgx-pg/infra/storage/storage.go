@@ -84,7 +84,7 @@ func (s *Storage) AddTask(task *add_task_to_list.AddTaskResponse) error {
 
 func (s *Storage) GetListsByAccountId(request get_lists.GetListsRequest) ([]get_lists.GetListsResponse, error) {
 	var listWithTask = []get_lists.GetListsResponse{}
-	var listsRef = map[string]*get_lists.GetListsResponse{}
+	var listsRef = map[string]int{}
 	var pageSize int64 = 10
 
 	rowsTask, err := s.pool.Query(context.Background(),
@@ -149,32 +149,32 @@ func (s *Storage) GetListsByAccountId(request get_lists.GetListsRequest) ([]get_
 				CreationDate: taskCreationDate.Time,
 			}
 
-			list := listsRef[rawListId]
-			if list != nil {
-				list.Tasks = append(listsRef[rawListId].Tasks, task)
+			index, exists := listsRef[rawListId]
+			if exists {
+				listWithTask[index].Tasks = append(listWithTask[index].Tasks, task)
 			} else {
 				list := get_lists.GetListsResponse{
 					Id:           listId,
 					Name:         listName,
-					CreationDate: taskCreationDate.Time,
+					CreationDate: listCreationDate,
 					AccountId:    accountId,
 					Tasks:        []get_lists.TasksResponse{},
 				}
 				list.Tasks = append(list.Tasks, task)
 				listWithTask = append(listWithTask, list)
-				listsRef[rawListId] = &listWithTask[len(listWithTask)-1]
+				listsRef[rawListId] = len(listWithTask) - 1
 			}
 		} else {
 			// List without tasks
 			list := get_lists.GetListsResponse{
 				Id:           listId,
 				Name:         listName,
-				CreationDate: taskCreationDate.Time,
+				CreationDate: listCreationDate,
 				AccountId:    accountId,
 				Tasks:        []get_lists.TasksResponse{},
 			}
 			listWithTask = append(listWithTask, list)
-			listsRef[rawListId] = &listWithTask[len(listWithTask)-1]
+			listsRef[rawListId] = len(listWithTask) - 1
 		}
 	}
 	return listWithTask, nil

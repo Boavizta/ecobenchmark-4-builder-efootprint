@@ -23,3 +23,24 @@ test('upgraded Express, Joi and Sequelize initialize and validate requests', asy
   });
   assert.equal(invalid.status, 422);
 });
+
+test('list aggregation preserves empty lists and groups joined tasks', async () => {
+  const models = require('../src/model');
+  const sequelize = require('../src/service/database');
+  const original = sequelize.query;
+  sequelize.query = async () => [
+    { id: 'first', account_id: 'account', name: 'first', creation_date: '2026-01-01', task_id: null },
+    { id: 'second', account_id: 'account', name: 'second', creation_date: '2026-01-02', task_id: 'task1', task_name: 'one' },
+    { id: 'second', account_id: 'account', name: 'second', creation_date: '2026-01-02', task_id: 'task2', task_name: 'two' },
+  ];
+  try {
+    const lists = await models.list.findByAccount('account', 0);
+    assert.equal(lists.length, 2);
+    assert.deepEqual(lists[0].tasks, []);
+    assert.equal(lists[0].creation_date, '2026-01-01');
+    assert.equal(lists[0].account_id, 'account');
+    assert.equal(lists[1].tasks.length, 2);
+  } finally {
+    sequelize.query = original;
+  }
+});

@@ -15,4 +15,6 @@ ENV APP_ENV prod
 ENV APP_RUNTIME_OPTIONS='{"disable_dotenv":true}'
 COPY . /var/www/project
 WORKDIR /var/www/project
+RUN chown -R www-data /var/www/project
+USER www-data
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts

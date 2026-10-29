@@ -23,3 +23,43 @@ test('upgraded Express, Joi and Sequelize initialize and validate requests', asy
   });
   assert.equal(invalid.status, 422);
 });
+
+test('list aggregation groups binary IDs by value and omits null tasks', async () => {
+  const models = require('../src/model');
+  const sequelize = require('../src/service/database');
+  const { toBinaryUUID } = require('@hypercharlie/sequelize-binary-uuid');
+  const id = '00000000-0000-4000-8000-000000000001';
+  const second = '00000000-0000-4000-8000-000000000002';
+  const original = sequelize.query;
+  sequelize.query = async () => [
+    { id: toBinaryUUID(id), account_id: toBinaryUUID(id), name: 'first', creation_date: '2026-01-01', task_id: null },
+    { id: toBinaryUUID(second), account_id: toBinaryUUID(id), name: 'second', task_id: toBinaryUUID(id), task_name: 'one' },
+    { id: toBinaryUUID(second), account_id: toBinaryUUID(id), name: 'second', task_id: toBinaryUUID(second), task_name: 'two' },
+  ];
+  try {
+    const lists = await models.list.findByAccount(id, 0);
+    assert.equal(lists.length, 2);
+    assert.deepEqual(lists[0].tasks, []);
+    assert.equal(lists[0].creation_date, '2026-01-01');
+    assert.equal(lists[0].account_id, id);
+    assert.equal(lists[1].tasks.length, 2);
+  } finally {
+    sequelize.query = original;
+  }
+});
+
+test('statistics decode account IDs with the same binary UUID layout as writes', async () => {
+  const models = require('../src/model');
+  const sequelize = require('../src/service/database');
+  const { toBinaryUUID } = require('@hypercharlie/sequelize-binary-uuid');
+  const id = '12345678-abcd-4000-8000-123456789abc';
+  const original = sequelize.query;
+  sequelize.query = async () => [{ account_id: toBinaryUUID(id), list_count: 2, task_avg: '1.50' }];
+  try {
+    const rows = await models.account.statistics();
+    assert.equal(rows[0].account_id, id);
+    assert.equal(Number(rows[0].task_avg), 1.5);
+  } finally {
+    sequelize.query = original;
+  }
+});

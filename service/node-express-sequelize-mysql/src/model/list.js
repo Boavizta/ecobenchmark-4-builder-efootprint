@@ -5,20 +5,23 @@ const taskFromResult = (item) => (item.task_id?{
   id: fromBinaryUUID(item.task_id),
   name: item.task_name,
   description: item.description,
-  creationDate: item.taskCreationDate,
+  creation_date: item.task_creation_date,
 }:null);
 
 const aggregateLists = (result) => {
   const lists = result.reduce((res, item) => {
-    if (!res.has(item.id)) {
-      res.set(item.id, {
-        id: fromBinaryUUID(item.id),
+    const id = fromBinaryUUID(item.id);
+    if (!res.has(id)) {
+      res.set(id, {
+        id,
+        account_id: fromBinaryUUID(item.account_id),
         name: item.name,
-        creationDate: item.creationDate,
-        tasks: [taskFromResult(item)],
+        creation_date: item.creation_date,
+        tasks: [],
       });
-    } else {
-      res.get(item.id).tasks.push(taskFromResult(item));
+    }
+    if (item.task_id !== null) {
+      res.get(id).tasks.push(taskFromResult(item));
     }
     return res;
   }, new Map());
@@ -44,7 +47,6 @@ module.exports = (sequelize, DataTypes) => {
 
     static findByAccount(accountId, page, size = 10) {
 
-      console.log(accountId);
       return sequelize.query(`
 
         SELECT

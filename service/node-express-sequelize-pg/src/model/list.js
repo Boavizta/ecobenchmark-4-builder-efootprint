@@ -2,10 +2,10 @@ const { Model, QueryTypes } = require('sequelize');
 
 const taskFromResult = (item) => ({
   id: item.task_id,
-  listId: item.listId,
+  list_id: item.id,
   name: item.task_name,
   description: item.description,
-  creationDate: item.taskCreationDate,
+  creation_date: item.task_creation_date,
 });
 
 const aggregateLists = (result) => {
@@ -13,12 +13,13 @@ const aggregateLists = (result) => {
     if (!res.has(item.id)) {
       res.set(item.id, {
         id: item.id,
-        accountId: item.accountId,
+        account_id: item.account_id,
         name: item.name,
-        creationDate: item.creationDate,
-        tasks: [taskFromResult(item)],
+        creation_date: item.creation_date,
+        tasks: [],
       });
-    } else {
+    }
+    if (item.task_id !== null) {
       res.get(item.id).tasks.push(taskFromResult(item));
     }
     return res;

@@ -3,6 +3,7 @@ package com.ecobenchmark.controllers.getlists;
 
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -15,7 +16,9 @@ public class ListResponse {
     private UUID id;
     private String name;
     private List<TaskResponse> tasks = new ArrayList<>();
+    @JsonProperty("creation_date")
     private Instant creationDate;
+    @JsonProperty("account_id")
     private UUID accountId;
 
     public ListResponse(UUID id, String name, Instant creationDate, UUID accountId) {
