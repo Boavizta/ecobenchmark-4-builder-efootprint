@@ -1,5 +1,5 @@
 use std::net::{SocketAddr, IpAddr};
-use axum::Server;
+use tokio::net::TcpListener;
 
 mod handler;
 mod model;
@@ -21,8 +21,8 @@ async fn main() {
     let addr = binding();
     let db = service::database::create_pool().await;
 
-    Server::bind(&addr)
-        .serve(handler::router(db).into_make_service())
+    let listener = TcpListener::bind(addr).await.unwrap();
+    axum::serve(listener, handler::router(db))
         .await
         .unwrap();
 }

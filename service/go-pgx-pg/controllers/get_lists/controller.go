@@ -1,9 +1,9 @@
 package get_lists
 
 import (
-	"github.com/gofrs/uuid"
-	echo "github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
+	"fmt"
+	"github.com/gofrs/uuid/v5"
+	echo "github.com/labstack/echo/v5"
 	"go_pgx/common"
 	"go_pgx/usecases/get_lists"
 	"log"
@@ -11,10 +11,10 @@ import (
 	"strconv"
 )
 
-func Controller(storage get_lists.Storage) func(c echo.Context) error {
+func Controller(storage get_lists.Storage) func(c *echo.Context) error {
 	useCase := get_lists.GetListsByAccountId{Storage: storage}
 
-	return func(c echo.Context) error {
+	return func(c *echo.Context) error {
 
 		accountId, err := uuid.FromString(c.Param("account_id"))
 		if err != nil {
@@ -34,7 +34,7 @@ func Controller(storage get_lists.Storage) func(c echo.Context) error {
 		lists, err := useCase.Execute(requestLists)
 
 		if err != nil {
-			log.Printf("%+v", errors.Wrap(err, "failed to handle the request to get the lists"))
+			log.Printf("%+v", fmt.Errorf("%s: %w", "failed to handle the request to get the lists", err))
 			return c.String(http.StatusInternalServerError, "failed to add the lists")
 		}
 

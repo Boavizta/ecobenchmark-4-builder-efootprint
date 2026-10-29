@@ -16,6 +16,8 @@ release.properties
 .classpath
 .settings/
 bin/
+!service/php-symfony-*/bin/
+!service/php-symfony-*/bin/console
 
 # IntelliJ
 .idea

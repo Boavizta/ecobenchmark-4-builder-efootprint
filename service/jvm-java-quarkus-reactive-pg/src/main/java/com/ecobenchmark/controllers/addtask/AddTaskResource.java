@@ -4,13 +4,13 @@ import com.ecobenchmark.entities.ListEntity;
 import com.ecobenchmark.entities.Task;
 import com.ecobenchmark.repositories.ListEntityRepository;
 import com.ecobenchmark.repositories.TaskRepository;
-import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional;
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -28,7 +28,7 @@ public class AddTaskResource {
 
     @POST
     @Path("/{id}/tasks")
-    @ReactiveTransactional
+    @WithTransaction
     public Uni<Response> addTask(@PathParam("id") UUID listId, TaskRequest taskRequest) {
         return listEntityRepository.findById(listId)
                 .onItem().ifNotNull().transformToUni(listEntity -> createTask(listEntity, taskRequest))

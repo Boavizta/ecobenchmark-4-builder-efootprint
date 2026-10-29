@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.14-slim-trixie
 WORKDIR /code
 COPY ./requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt

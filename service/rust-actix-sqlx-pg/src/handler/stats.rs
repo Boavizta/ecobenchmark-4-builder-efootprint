@@ -6,6 +6,6 @@ use actix_web::{get, web, HttpResponse};
 #[get("/api/stats")]
 async fn handler(pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
     let mut conn = pool.acquire().await?;
-    let result = AccountStat::list(&mut conn).await?;
+    let result = AccountStat::list(&mut *conn).await?;
     Ok(HttpResponse::Ok().json(result))
 }

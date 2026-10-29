@@ -1,8 +1,8 @@
 package add_task_to_list
 
 import (
-	"github.com/gofrs/uuid"
-	"github.com/pkg/errors"
+	"fmt"
+	"github.com/gofrs/uuid/v5"
 	"time"
 )
 
@@ -13,7 +13,7 @@ type AddTask struct {
 func (c *AddTask) Execute(request AddTaskRequest) (*AddTaskResponse, error) {
 	id, err := uuid.NewV4()
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to generate uuid")
+		return nil, fmt.Errorf("%s: %w", "failed to generate uuid", err)
 	}
 
 	taskResponse := &AddTaskResponse{
@@ -26,7 +26,7 @@ func (c *AddTask) Execute(request AddTaskRequest) (*AddTaskResponse, error) {
 
 	err = c.Storage.AddTask(taskResponse)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to create the task %s", request.Name)
+		return nil, fmt.Errorf("%s: %w", fmt.Sprintf("failed to create the task %s", request.Name), err)
 	}
 
 	return taskResponse, nil

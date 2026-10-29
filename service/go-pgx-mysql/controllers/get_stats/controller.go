@@ -1,22 +1,22 @@
 package get_stats
 
 import (
-	echo "github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
+	"fmt"
+	echo "github.com/labstack/echo/v5"
 	"go_pgx/usecases/get_stats"
 	"log"
 	"net/http"
 )
 
-func Controller(storage get_stats.Storage) func(c echo.Context) error {
+func Controller(storage get_stats.Storage) func(c *echo.Context) error {
 	useCase := get_stats.GetStatsByAccounts{Storage: storage}
 
-	return func(c echo.Context) error {
+	return func(c *echo.Context) error {
 
 		stats, err := useCase.Execute()
 
 		if err != nil {
-			log.Printf("%+v", errors.Wrap(err, "failed to handle the request to get the stats"))
+			log.Printf("%+v", fmt.Errorf("%s: %w", "failed to handle the request to get the stats", err))
 			return c.String(http.StatusInternalServerError, "failed to add the stats")
 		}
 

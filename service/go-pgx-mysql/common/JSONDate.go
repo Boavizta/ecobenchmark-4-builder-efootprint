@@ -25,7 +25,7 @@ func (self JSONDATE) MarshalJSON() ([]byte, error) {
 	return []byte(timeStr), nil
 }
 
-//Output string
+// Output string
 func (self JSONDATE) String() string {
 	return self.Time.Format(timeFormatYMDhms)
 }

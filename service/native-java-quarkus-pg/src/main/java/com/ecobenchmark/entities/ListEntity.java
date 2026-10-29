@@ -3,9 +3,8 @@ package com.ecobenchmark.entities;
 
 import com.ecobenchmark.controllers.getlists.ListResponse;
 import com.ecobenchmark.controllers.getlists.TaskResponse;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -32,8 +31,7 @@ import java.util.UUID;
 public class ListEntity {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne

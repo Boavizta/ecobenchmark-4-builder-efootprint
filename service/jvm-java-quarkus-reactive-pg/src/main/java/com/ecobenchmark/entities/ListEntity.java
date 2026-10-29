@@ -1,10 +1,8 @@
 package com.ecobenchmark.entities;
 
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -13,8 +11,7 @@ import java.util.UUID;
 public class ListEntity {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne
@@ -22,7 +19,6 @@ public class ListEntity {
 
     private String name;
 
-    @Type(type = "com.ecobenchmark.entities.TimestampWithTimezone")
     @Column(name = "creation_date", columnDefinition = "timestamp with time zone not null")
     private Instant creationDate;
 

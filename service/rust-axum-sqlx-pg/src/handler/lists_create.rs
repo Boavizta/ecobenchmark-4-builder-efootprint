@@ -11,6 +11,6 @@ pub async fn handle(
     Json(payload): Json<ListCreate>,
 ) -> Result<(StatusCode, Json<List>), Error> {
     let mut conn = pool.acquire().await?;
-    let created = payload.execute(&mut conn, account_id).await?;
+    let created = payload.execute(&mut *conn, account_id).await?;
     Ok((StatusCode::CREATED, Json(created)))
 }

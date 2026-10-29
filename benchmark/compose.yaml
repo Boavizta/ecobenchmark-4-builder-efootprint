@@ -1,10 +1,10 @@
 services:
   database:
-    image: ${DATABASE_IMAGE:-postgres:14.2-bullseye}
+    image: ${DATABASE_IMAGE:-postgres:18.6-trixie}
     environment:
       POSTGRES_PASSWORD: benchmark
     volumes:
-      - database:/var/lib/postgresql/data
+      - database:/var/lib/postgresql
       - ../migrations/20220408080000_init.sql:/docker-entrypoint-initdb.d/00-schema.sql:ro
       - ./seed.sql:/docker-entrypoint-initdb.d/10-seed.sql:ro
     healthcheck:

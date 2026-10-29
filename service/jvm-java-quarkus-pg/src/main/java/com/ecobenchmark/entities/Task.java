@@ -1,9 +1,8 @@
 package com.ecobenchmark.entities;
 
 import com.ecobenchmark.controllers.getstats.StatsResponse;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -21,8 +20,7 @@ import java.util.UUID;
 public class Task {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private String name;

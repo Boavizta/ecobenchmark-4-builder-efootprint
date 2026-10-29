@@ -1,9 +1,8 @@
 package com.ecobenchmark.kotlinspringjpa.entities
 
-import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
 import java.util.*
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity(name = "list")
 class ListEntity(
@@ -15,7 +14,6 @@ class ListEntity(
     var tasks: List<Task>
 ) {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null
 }

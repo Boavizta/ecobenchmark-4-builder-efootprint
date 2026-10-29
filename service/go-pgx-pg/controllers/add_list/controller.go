@@ -1,19 +1,19 @@
 package add_list
 
 import (
-	"github.com/gofrs/uuid"
-	echo "github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
+	"fmt"
+	"github.com/gofrs/uuid/v5"
+	echo "github.com/labstack/echo/v5"
 	"go_pgx/common"
 	"go_pgx/usecases/add_list"
 	"log"
 	"net/http"
 )
 
-func Controller(storage add_list.Storage) func(c echo.Context) error {
+func Controller(storage add_list.Storage) func(c *echo.Context) error {
 	useCase := add_list.AddList{Storage: storage}
 
-	return func(c echo.Context) error {
+	return func(c *echo.Context) error {
 		request := requestBody{}
 		if err := c.Bind(&request); err != nil {
 			return c.NoContent(http.StatusBadRequest)
@@ -32,7 +32,7 @@ func Controller(storage add_list.Storage) func(c echo.Context) error {
 		createdList, err := useCase.Execute(requestList)
 
 		if err != nil {
-			log.Printf("%+v", errors.Wrap(err, "failed to handle the request to add the list"))
+			log.Printf("%+v", fmt.Errorf("%s: %w", "failed to handle the request to add the list", err))
 			return c.String(http.StatusInternalServerError, "failed to add the list")
 		}
 

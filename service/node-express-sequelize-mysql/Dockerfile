@@ -1,4 +1,4 @@
-FROM node:current-bullseye
+FROM node:26-bookworm-slim
 
 ENV PORT=8080
 

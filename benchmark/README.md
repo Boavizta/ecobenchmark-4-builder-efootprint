@@ -4,6 +4,12 @@ One lifecycle for local Lima VMs and dedicated Linux servers over SSH. The contr
 requires Python 3.9+ on macOS or Linux; no Python packages or host Docker daemon.
 Only the Go/PostgreSQL reference service and two read workloads are integrated so far.
 
+The database image is pinned to PostgreSQL 18.6. PostgreSQL 18 uses a versioned
+data directory, so the Compose volume is mounted at `/var/lib/postgresql` rather
+than `/var/lib/postgresql/data`. Existing PostgreSQL 14 data cannot be reused
+directly: back it up and migrate with dump/restore or `pg_upgrade` into a separate
+volume before using PostgreSQL 18. Changing an image tag does not migrate data.
+
 ## Local VMs
 
 Requires Apple Silicon macOS, Lima 2.0+ (`brew install lima`), and an external volume

@@ -11,6 +11,6 @@ async fn handler(
     payload: web::Query<ListList>,
 ) -> Result<HttpResponse, Error> {
     let mut conn = pool.acquire().await?;
-    let result = payload.execute(&mut conn, account_id.into_inner()).await?;
+    let result = payload.execute(&mut *conn, account_id.into_inner()).await?;
     Ok(HttpResponse::Ok().json(result))
 }

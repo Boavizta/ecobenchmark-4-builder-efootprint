@@ -1,4 +1,4 @@
-FROM rust:1-slim AS builder
+FROM rust:1.99.1-trixie AS builder
 
 ENV USER=root
 
@@ -11,7 +11,7 @@ RUN cargo vendor >> /code/.cargo/config.toml
 COPY src /code/src
 RUN cargo build --release --offline
 
-FROM gcr.io/distroless/cc-debian11
+FROM gcr.io/distroless/cc-debian13
 
 ENV ADDRESS=0.0.0.0
 ENV PORT=8080

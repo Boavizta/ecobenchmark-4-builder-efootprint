@@ -355,7 +355,7 @@ def run_once(args, results):
         url = f'http://{target_ip()}:8080'
         ready(url)
         metadata['images'] = json.loads(guest(TARGET, 'sudo', '-n', 'docker', 'image', 'inspect',
-                                             'ecobench/go-pgx-pg:local', 'postgres:14.2-bullseye'))
+                                             'ecobench/go-pgx-pg:local', 'postgres:18.6-trixie'))
         metadata['runner_image'] = json.loads(guest(RUNNER, 'sudo', '-n', 'docker', 'image', 'inspect', K6))
         metadata['hosts'] = {vm: {'uname': guest(vm, 'uname', '-a').strip(),
                                   'cpu': guest(vm, 'lscpu'),
