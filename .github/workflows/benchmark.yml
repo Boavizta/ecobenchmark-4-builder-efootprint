@@ -1,0 +1,18 @@
+name: Benchmark harness
+on:
+  push:
+    paths: ['benchmark/**', 'migrations/**', '.github/workflows/benchmark.yml']
+  pull_request:
+    paths: ['benchmark/**', 'migrations/**', '.github/workflows/benchmark.yml']
+permissions:
+  contents: read
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      - run: python -m unittest discover -s benchmark -p 'test_*.py' -v
+      - run: docker compose -f benchmark/compose.yaml config --quiet

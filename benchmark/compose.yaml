@@ -1,0 +1,30 @@
+services:
+  database:
+    image: ${DATABASE_IMAGE:-postgres:14.2-bullseye}
+    environment:
+      POSTGRES_PASSWORD: benchmark
+    volumes:
+      - database:/var/lib/postgresql/data
+      - ../migrations/20220408080000_init.sql:/docker-entrypoint-initdb.d/00-schema.sql:ro
+      - ./seed.sql:/docker-entrypoint-initdb.d/10-seed.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U postgres']
+      interval: 2s
+      timeout: 2s
+      retries: 60
+    cpus: 1
+    mem_limit: 1g
+  application:
+    image: ${APPLICATION_IMAGE:-ecobench/go-pgx-pg:local}
+    environment:
+      DATABASE_URL: postgres://postgres:benchmark@database:5432/postgres
+      DATABASE_POOL_MAX: '20'
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - '${BENCHMARK_BIND_ADDRESS:-0.0.0.0}:8080:8080'
+    cpus: 1
+    mem_limit: 512m
+volumes:
+  database:
