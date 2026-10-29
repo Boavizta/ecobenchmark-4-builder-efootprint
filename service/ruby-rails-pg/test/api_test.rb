@@ -34,6 +34,39 @@ class ApiTest < Minitest::Test
     assert_equal 204, last_response.status
   end
 
+  def business_queries
+    queries = []
+    listener = ->(_name, _start, _finish, _id, event) do
+      sql = event.fetch(:sql)
+      queries << sql if sql.match?(/\b(?:FROM|INTO)\s+"?(?:account|list|task)"?\b/i)
+    end
+    ActiveSupport::Notifications.subscribed(listener, "sql.active_record") { yield }
+    queries
+  end
+
+  def test_sql_scope_matches_the_reference_without_parent_lookup_queries
+    owner = account
+    path = "/api/accounts/#{owner.fetch('id')}/lists"
+    list = nil
+    queries = business_queries { list = create(path, name: "SQL scope") }
+    assert_equal 1, queries.size, queries.inspect
+    assert_match(/INSERT INTO "list"/, queries.first)
+    queries = business_queries { create("/api/lists/#{list.fetch('id')}/tasks", name: "task", description: "scope") }
+    assert_equal 1, queries.size, queries.inspect
+    assert_match(/INSERT INTO "task"/, queries.first)
+    queries = business_queries { read(path, page: 0) }
+    assert_equal 1, queries.size, queries.inspect
+    assert_match(/LEFT JOIN task/, queries.first)
+    refute_match(/ORDER BY/, queries.first)
+  end
+
+  def test_database_foreign_keys_still_reject_missing_parents
+    post "/api/accounts/#{SecureRandom.uuid}/lists", JSON.generate(name: "missing"), "CONTENT_TYPE" => "application/json"
+    assert_equal 400, last_response.status
+    post "/api/lists/#{SecureRandom.uuid}/tasks", JSON.generate(name: "missing", description: "missing"), "CONTENT_TYPE" => "application/json"
+    assert_equal 400, last_response.status
+  end
+
   def test_empty_and_populated_lists_preserve_content_and_fractional_statistics
     owner = account
     path = "/api/accounts/#{owner.fetch('id')}/lists"

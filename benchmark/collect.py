@@ -2,6 +2,7 @@
 import datetime
 import http.client
 import json
+import os
 import signal
 import socket
 import sys
@@ -12,7 +13,7 @@ class DockerConnection(http.client.HTTPConnection):
     def connect(self):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.sock.settimeout(10)
-        self.sock.connect('/var/run/docker.sock')
+        self.sock.connect(os.environ.get('ECOBENCH_DOCKER_SOCKET', '/var/run/docker.sock'))
 
 
 def request(path):

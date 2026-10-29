@@ -224,6 +224,43 @@ These are **local functional load checks**, not comparable performance or energy
 measurements. They are separate from the Lima/SSH reference benchmark lifecycle.
 They do not replace exhaustive API conformance tests.
 
+## Full local service inventory and one-run measurements
+
+```sh
+# Read-only inventory: every branch and PR, including merged/closed PRs.
+python3 benchmark/inventory_services.py --output results/full-run/inventory
+# Exactly one timed run per implemented HTTP service; no automatic retries.
+python3 benchmark/full_services.py --output results/full-run
+# Derive recaps and optionally bundle raw evidence; this runs no benchmark.
+python3 benchmark/analyze_full_services.py results/full-run --bundle results/full-run.zip
+```
+
+The full local runner uses the original `runner/scenario.js` mixed journey,
+2 VUs for 60 seconds, sequentially. Each service gets fresh PostgreSQL/MySQL
+containers and the same untimed API validation/data preparation (2 accounts,
+25 lists, 3 tasks). Both application and database are limited to 1 CPU / 1 GiB.
+Validation checks empty/populated lists, unchanged task content and ownership,
+fractional statistics, and zero-based 23-list pagination. The database must expose
+only the shared `account`, `list`, and `task` tables; actual columns/indexes are saved.
+
+`recap.md` and `status.json` are updated after every service. Per-service directories
+preserve Docker build/application/database logs, `validation.json`, `schema.json`,
+the workload snapshot, raw `k6-summary.json`, approximately 1 Hz `resources.jsonl`,
+and normalized `summary.json` plus image/source/hardware metadata. CPU is cumulative
+cgroup time; memory is sampled cgroup usage (including cache), not process RSS.
+The collector connects to the active local Unix-socket Docker context.
+
+Existing run manifests are refused rather than overwritten. A failed service is
+reported, not silently rerun. An unsuccessful validation receives no timed run.
+`usable=true` means a technically valid **local exploratory observation**, not an
+e-footprint calibration or energy result. One run has no confidence interval;
+hardware is shared and the mixed workload grows the database as it runs. Do not
+rank frameworks or populate hardware-independent footprint factors from this alone.
+The two-host Lima/SSH reference workflow above remains separate and Go-only.
+The analyzer adds `analysis.md`, `analysis.json`, and `recap.csv` without modifying
+the raw per-service measurements. Failed runs retain their counters but never
+receive a usable per-request footprint factor.
+
 ## Tests
 
 ```sh

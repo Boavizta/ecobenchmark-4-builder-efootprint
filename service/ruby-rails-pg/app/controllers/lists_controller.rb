@@ -1,15 +1,13 @@
 
 class ListsController < ApplicationController
-  before_action :load_account
-
   def index
-    @list = ListResponse.generate(@account.id, params[:page])
+    @list = ListResponse.generate(params[:account_id], params[:page])
     response.headers['Content-Type'] = 'application/json'
     render json: @list
   end
 
   def create
-    @list = @account.lists.new(params.permit(:name))
+    @list = List.new(params.permit(:name).merge(account_id: params[:account_id]))
     response.headers['Content-Type'] = 'application/json'
     if @list.save
       render json: @list, status: :created
@@ -18,9 +16,4 @@ class ListsController < ApplicationController
     end
   end
 
-  private
-
-  def load_account
-    @account = Account.find(params[:account_id])
-  end
 end

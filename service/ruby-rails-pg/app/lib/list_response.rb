@@ -38,11 +38,9 @@ class ListResponse
         SELECT id
         FROM list
         WHERE account_id = ?
-        ORDER BY creation_date, id
         LIMIT 10
         OFFSET ?
       )
-      ORDER BY l.creation_date, l.id, t.creation_date, t.id
     ", account_id, account_id, 10 * page])
     ActiveRecord::Base.connection.execute(sql)
   end

@@ -1,9 +1,7 @@
 
 class TasksController < ApplicationController
-  before_action :load_list
-
   def create
-    @task = @list.tasks.new(params.permit(:name, :description))
+    @task = Task.new(params.permit(:name, :description).merge(list_id: params[:list_id]))
     response.headers['Content-Type'] = 'application/json'
     if @task.save
       render json: @task, status: :created
@@ -12,9 +10,4 @@ class TasksController < ApplicationController
     end
   end
 
-  private
-
-  def load_list
-    @list = List.find(params[:list_id])
-  end
 end

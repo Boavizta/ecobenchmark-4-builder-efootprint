@@ -36,6 +36,10 @@ RAILS_ENV=test bundle exec ruby test/api_test.rb
 
 The API tests cover 23-list pagination, empty lists, task persistence, fractional
 statistics, and strings containing JSON property names (which must not be altered).
+They also assert the reference SQL scope: one INSERT for a list/task write and
+one LEFT JOIN query for a list read, without parent-lookup SELECTs or extra sorting.
+Database foreign keys enforce parent integrity. ORM transaction statements and
+PostgreSQL's generated-UUID `RETURNING` remain documented framework differences.
 
 ## Context
 

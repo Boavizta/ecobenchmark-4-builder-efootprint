@@ -3,7 +3,8 @@
 The supported execution workflow is documented in [benchmark/README.md](benchmark/README.md).
 `benchmark/` owns orchestration and measurement, `service/` contains implementations,
 `migrations/` contains database schemas, and `test/` / `validator/` contain conformity tests.
-`runner/` retains historical workloads awaiting migration.
+`runner/` retains historical workloads; `benchmark/full_services.py` runs the mixed
+journey across all implemented HTTP services with raw local resource observations.
 
 ## Service Contribution
 
@@ -125,8 +126,12 @@ in `benchmark/ecobench.py`; transport-specific command construction lives in
 
 For local execution use `make benchmark-up`, `make benchmark-prepare`, and
 `make benchmark-run`. For SSH deployment follow the dedicated-server setup guide.
-Only the Go/PostgreSQL reference service is currently integrated into the harness;
-other service implementations and their local Compose files remain available for development.
+Only the Go/PostgreSQL reference service is currently integrated into the two-host
+Lima/SSH harness. For a one-run-per-service local Docker sweep, use
+`python3 benchmark/full_services.py --output results/full-run`; see the limitations
+and output formats in `benchmark/README.md`. Experimental branches changing the
+protocol, indexes, pagination, aggregation design, or fixture size are separate
+use cases, not silently interchangeable default-scope services.
 
 Results are written under `results/` and are ignored by Git. Preserve raw observations,
 units, hardware/image metadata, and failure status when proposing analysis or export
