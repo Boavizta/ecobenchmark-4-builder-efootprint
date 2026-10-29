@@ -190,7 +190,49 @@ requests are separate; datasets are recreated between repetitions, not between t
 Image version tags are currently bootstrapping defaults, **not a digest-locked
 reference campaign**. Exact resolved images are recorded. The Ubuntu base and
 provisioned apt packages may evolve. Establish a digest/package lock before publishing
-reference comparisons. No unsupported energy collector or dashboard is installed.
+reference comparisons. No dashboard or background energy agent is installed.
+
+## Scaphandre v1.0.3: simulated RAPL integration test
+
+The previous benchmark campaigns contain **no Scaphandre energy measurements**.
+The standalone test below validates the actual Scaphandre Linux x86-64 sensor and
+JSON exporter against generated counter files. It is not yet a synchronized energy
+collector for the Lima/SSH or full-service benchmark workflows above.
+
+```sh
+# Run on the actual target to report readable RAPL capability (no installation).
+python3 benchmark/scaphandre.py doctor
+# On this Mac, run an isolated amd64 container with synthetic RAPL inputs.
+python3 benchmark/scaphandre.py simulate --duration 15 --output results/scaphandre-simulation
+```
+
+The official `hubblo/scaphandre:1.0.3` amd64 image is pinned by digest and checked
+against source revision `b64443c447e24f25947111ec8611449f213eb0a5`. Upstream's
+v1.0.3 OCI release retains a `1.0.2` executable/Cargo version string; both are recorded,
+not silently confused. See the [release](https://github.com/hubblo-org/scaphandre/releases/tag/v1.0.3)
+and [compatibility requirements](https://hubblo-org.github.io/scaphandre-documentation/compatibility.html).
+
+Simulation supplies fake CPU topology, an empty module inventory, and monotonically
+increasing fake RAPL energy counters representing **40 W package + 10 W DRAM**.
+The counter generator runs inside Linux and writes to tmpfs, not the Mac shared
+filesystem; this avoids inconsistent counter reads during host-file replacement.
+The module fixture also avoids an upstream procfs 0.15 parsing failure on Docker
+Desktop kernel module refcounts. A simulation-only `LD_PRELOAD` adapter redirects
+reads of `/proc/cpuinfo` and `/proc/modules` to the fixtures. It leaves the upstream
+Scaphandre binary and the host `/proc` unchanged. This is x86 userspace emulation on Apple Silicon,
+not an Intel CPU performance model or physical meter. The container has no network,
+no added capabilities, no host PID namespace, and read-only sensor fixtures.
+Its only temporary workspace is a 64 MiB tmpfs, needed by x86 emulation.
+
+Outputs preserve `scaphandre.json`, `synthetic-counters.jsonl`, fixture files,
+collector logs, pinned image provenance, and a normalized `summary.json`.
+All simulated reports have `simulation=true`, `measured_energy_available=false`,
+`joules=null`; computed values are stored separately as `simulated_joules`.
+The parser converts **microwatts** to watts, ignores startup/no-sensor placeholders,
+and integrates only the host aggregate (never double-counting sockets/domains).
+Neither simulated joules nor process power allocations are physical measurements.
+Real collection requires a compatible RAPL target and a separately authorized run;
+it cannot be reconstructed for historical benchmark campaigns.
 
 ## Service compatibility smoke benchmarks
 
