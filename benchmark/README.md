@@ -217,7 +217,8 @@ per-attempt directories contain build/application/database/k6 logs and metrics.
 Each attempt also saves its scenario and SHA-256 hash. The command exits nonzero
 if any selected service fails. Do not run concurrent processes against the same
 output directory; use separate directories for independent batches.
-Ruby is excluded because its directory contains no implementation.
+`ruby-rails-pg` is the Rails/PostgreSQL implementation adapted from upstream PR #37.
+Only `ruby-ror-mysql` is excluded: that directory still contains no implementation.
 
 These are **local functional load checks**, not comparable performance or energy
 measurements. They are separate from the Lima/SSH reference benchmark lifecycle.

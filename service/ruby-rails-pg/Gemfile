@@ -1,0 +1,12 @@
+source "https://rubygems.org"
+
+ruby "4.0.9"
+
+gem "bootsnap", "~> 1.26", require: false
+gem "rails", "~> 8.1.4"
+gem "pg", "~> 1.7"
+gem "puma", "~> 8.0.2"
+
+group :test do
+  gem "minitest", "~> 5.0"
+end

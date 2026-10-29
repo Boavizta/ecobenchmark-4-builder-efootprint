@@ -21,7 +21,8 @@ class SmokeServiceTests(unittest.TestCase):
 
     def test_only_implemented_services_are_selected(self):
         names = smoke_services.available_services()
-        self.assertEqual(len(names), 19)
+        self.assertEqual(len(names), 20)
+        self.assertIn('ruby-rails-pg', names)
         self.assertNotIn('ruby-ror-mysql', names)
 
     def test_k6_metrics_preserve_failed_checks(self):
