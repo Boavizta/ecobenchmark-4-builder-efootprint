@@ -77,6 +77,9 @@ Exemple :
 
 ## Contributing
 
+For agent-assisted work, start with [AGENTS.md](AGENTS.md); it routes to the project
+scope, evidence rules, dated measurement snapshot, and e-footprint contract research.
+
 Everybody is more than welcome to contribute to this benchmark! Please check out the [Contributing guide](CONTRIBUTING.md) for guidelines about how to proceed.
 
 You can also [join us](https://boavizta.org/en/contact) and become a member of the non-profit French association.
