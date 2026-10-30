@@ -1,4 +1,4 @@
-FROM php:8.0.19-apache-buster
+FROM php:8.5-apache-trixie
 
 RUN apt-get update && \
     apt-get install -y libpq-dev unzip && \
@@ -12,6 +12,9 @@ RUN apt-get update && \
     php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 COPY apache.conf /etc/apache2/sites-enabled/symfony.conf
 ENV APP_ENV prod
+ENV APP_RUNTIME_OPTIONS='{"disable_dotenv":true}'
 COPY . /var/www/project
 WORKDIR /var/www/project
-RUN composer install --no-dev --optimize-autoloader
+RUN chown -R www-data /var/www/project
+USER www-data
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts

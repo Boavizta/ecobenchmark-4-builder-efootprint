@@ -3,13 +3,17 @@ import datetime
 from uuid import uuid4
 from typing import List
 from sqlalchemy import create_engine, text
+from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 import os
 
 _database_url = os.getenv("DATABASE_URL", "postgresql://postgres:mysecretpassword@127.0.0.1:5432/postgres")
 _database_pool_size = os.getenv("DATABASE_POOL_SIZE", "20")
-_engine = create_engine(_database_url, pool_size=int(_database_pool_size))
+_url = make_url(_database_url)
+if _url.drivername == "postgresql":
+    _url = _url.set(drivername="postgresql+psycopg2")
+_engine = create_engine(_url, pool_size=int(_database_pool_size))
 
 
 class AccountResponse(BaseModel):
@@ -22,7 +26,7 @@ class AccountStatistics(BaseModel):
     account_id: str
     account_login: str
     list_count: int
-    task_avg: int
+    task_avg: float
 
 
 class TaskResponse(BaseModel):

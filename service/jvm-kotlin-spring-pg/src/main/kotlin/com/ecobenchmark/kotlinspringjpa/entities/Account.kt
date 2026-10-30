@@ -1,12 +1,12 @@
 package com.ecobenchmark.kotlinspringjpa.entities
 
-import org.hibernate.annotations.GenericGenerator
+import jakarta.persistence.GenerationType
 import java.time.Instant
 import java.util.*
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.OneToMany
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
 
 @Entity
 data class Account(
@@ -16,7 +16,6 @@ data class Account(
     var lists: List<ListEntity>
 ) {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null
 }

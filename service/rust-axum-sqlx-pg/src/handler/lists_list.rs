@@ -10,6 +10,6 @@ pub async fn handle(
     Query(payload): Query<ListList>,
 ) -> Result<Json<Vec<ListWithTasks>>, Error> {
     let mut conn = pool.acquire().await?;
-    let result = payload.execute(&mut conn, account_id).await?;
+    let result = payload.execute(&mut *conn, account_id).await?;
     Ok(Json(result))
 }

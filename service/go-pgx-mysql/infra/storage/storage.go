@@ -2,8 +2,8 @@ package storage
 
 import (
 	"database/sql"
-	"github.com/gofrs/uuid"
-	"github.com/pkg/errors"
+	"fmt"
+	"github.com/gofrs/uuid/v5"
 	"go_pgx/usecases/add_account"
 	"go_pgx/usecases/add_list"
 	"go_pgx/usecases/add_task_to_list"
@@ -24,7 +24,7 @@ func New(connectionURI string) (*Storage, error) {
 	tokenizeUrl := strings.Split(connectionURI, "://")
 	pool, err := sql.Open(tokenizeUrl[0], tokenizeUrl[1])
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create the connection pool")
+		return nil, fmt.Errorf("%s: %w", "failed to create the connection pool", err)
 	}
 	pool.SetConnMaxLifetime(time.Minute * 3)
 	pool.SetMaxOpenConns(10)
@@ -47,7 +47,7 @@ func (s *Storage) AddAccount(account *add_account.AddAccountResponse) error {
 	)
 
 	if err != nil {
-		return errors.Wrapf(err, "failed to insert the account %s", account.Login)
+		return fmt.Errorf("%s: %w", fmt.Sprintf("failed to insert the account %s", account.Login), err)
 	}
 	return nil
 }
@@ -61,7 +61,7 @@ func (s *Storage) AddList(list *add_list.AddListResponse) error {
 		list.CreationDate,
 	)
 	if err != nil {
-		return errors.Wrapf(err, "failed to insert the list %s", list.Name)
+		return fmt.Errorf("%s: %w", fmt.Sprintf("failed to insert the list %s", list.Name), err)
 	}
 	return nil
 }
@@ -76,14 +76,14 @@ func (s *Storage) AddTask(task *add_task_to_list.AddTaskResponse) error {
 		task.CreationDate,
 	)
 	if err != nil {
-		return errors.Wrapf(err, "failed to insert the task %s", task.Name)
+		return fmt.Errorf("%s: %w", fmt.Sprintf("failed to insert the task %s", task.Name), err)
 	}
 	return nil
 }
 
 func (s *Storage) GetListsByAccountId(request get_lists.GetListsRequest) ([]get_lists.GetListsResponse, error) {
 	var listWithTask = []get_lists.GetListsResponse{}
-	var listsRef = map[string]*get_lists.GetListsResponse{}
+	var listsRef = map[string]int{}
 	var pageSize int64 = 10
 
 	rowsTask, err := s.pool.Query(
@@ -108,7 +108,7 @@ func (s *Storage) GetListsByAccountId(request get_lists.GetListsRequest) ([]get_
 		pageSize,
 	)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to select the tasks")
+		return nil, fmt.Errorf("%s: %w", "failed to select the tasks", err)
 	}
 	defer rowsTask.Close()
 	for rowsTask.Next() {
@@ -122,24 +122,24 @@ func (s *Storage) GetListsByAccountId(request get_lists.GetListsRequest) ([]get_
 		var taskCreationDate sql.NullTime
 		err = rowsTask.Scan(&rawListId, &listName, &listCreationDate, &rawAccountId, &rawTaskId, &taskName, &taskDescription, &taskCreationDate)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to scan the SQL result")
+			return nil, fmt.Errorf("%s: %w", "failed to scan the SQL result", err)
 		}
 
 		listId, err := uuid.FromString(rawListId)
 		if err != nil {
-			return nil, errors.Wrapf(err, "the task has wrong id: %s", rawListId)
+			return nil, fmt.Errorf("%s: %w", fmt.Sprintf("the task has wrong id: %s", rawListId), err)
 		}
 
 		accountId, err := uuid.FromString(rawAccountId)
 		if err != nil {
-			return nil, errors.Wrapf(err, "the task has wrong id: %s", rawAccountId)
+			return nil, fmt.Errorf("%s: %w", fmt.Sprintf("the task has wrong id: %s", rawAccountId), err)
 		}
 
 		if rawTaskId.Valid {
 			// List with tasks
 			taskId, err := uuid.FromString(rawTaskId.String)
 			if err != nil {
-				return nil, errors.Wrapf(err, "the task has wrong id: %s", rawTaskId)
+				return nil, fmt.Errorf("%s: %w", fmt.Sprintf("the task has wrong id: %s", rawTaskId.String), err)
 			}
 
 			task := get_lists.TasksResponse{
@@ -149,32 +149,32 @@ func (s *Storage) GetListsByAccountId(request get_lists.GetListsRequest) ([]get_
 				CreationDate: taskCreationDate.Time,
 			}
 
-			list := listsRef[rawListId]
-			if list != nil {
-				list.Tasks = append(listsRef[rawListId].Tasks, task)
+			index, exists := listsRef[rawListId]
+			if exists {
+				listWithTask[index].Tasks = append(listWithTask[index].Tasks, task)
 			} else {
 				list := get_lists.GetListsResponse{
 					Id:           listId,
 					Name:         listName,
-					CreationDate: taskCreationDate.Time,
+					CreationDate: listCreationDate,
 					AccountId:    accountId,
 					Tasks:        []get_lists.TasksResponse{},
 				}
 				list.Tasks = append(list.Tasks, task)
 				listWithTask = append(listWithTask, list)
-				listsRef[rawListId] = &listWithTask[len(listWithTask)-1]
+				listsRef[rawListId] = len(listWithTask) - 1
 			}
 		} else {
 			// List without tasks
 			list := get_lists.GetListsResponse{
 				Id:           listId,
 				Name:         listName,
-				CreationDate: taskCreationDate.Time,
+				CreationDate: listCreationDate,
 				AccountId:    accountId,
 				Tasks:        []get_lists.TasksResponse{},
 			}
 			listWithTask = append(listWithTask, list)
-			listsRef[rawListId] = &listWithTask[len(listWithTask)-1]
+			listsRef[rawListId] = len(listWithTask) - 1
 		}
 	}
 	return listWithTask, nil
@@ -187,7 +187,7 @@ func (s *Storage) GetStatsByAccounts() ([]get_stats.GetStatsByAccountsResponse, 
 		`select BIN_TO_UUID(id),  login, count(list_id) as nb_list, round(avg(nb_tasks),2) as avg_tasks from (select account.id, account.login, list.id list_id, count(task.id) nb_tasks from account inner join list on (list.account_id=account.id) left join task on (task.list_id=list.id) group by account.id, account.login, list.id) t group by id, login`,
 	)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to select the stats")
+		return nil, fmt.Errorf("%s: %w", "failed to select the stats", err)
 	}
 	defer rowsList.Close()
 	for rowsList.Next() {
@@ -197,11 +197,11 @@ func (s *Storage) GetStatsByAccounts() ([]get_stats.GetStatsByAccountsResponse, 
 		var taskAvg float64
 		err = rowsList.Scan(&rawAccountId, &accountLogin, &listCount, &taskAvg)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to scan the SQL result")
+			return nil, fmt.Errorf("%s: %w", "failed to scan the SQL result", err)
 		}
 		accountId, err := uuid.FromString(rawAccountId)
 		if err != nil {
-			return nil, errors.Wrapf(err, "the account has wrong id: %s", rawAccountId)
+			return nil, fmt.Errorf("%s: %w", fmt.Sprintf("the account has wrong id: %s", rawAccountId), err)
 		}
 		stat := get_stats.GetStatsByAccountsResponse{
 			AccountId:    accountId,

@@ -26,7 +26,9 @@ services:
 
   database:
     image: jdrouet/eco-benchmark:database-mysql
-    build: ../../migrations
+    build:
+      context: ../../migrations
+      dockerfile: Dockerfile.mysql
     environment:
       - MYSQL_USER=ecobench
       - MYSQL_ROOT_PASSWORD=mysecretpassword

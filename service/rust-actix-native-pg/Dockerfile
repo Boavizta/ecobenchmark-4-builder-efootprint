@@ -1,5 +1,5 @@
-ARG RUST_VERSION=1.61.0
-FROM rust:${RUST_VERSION}-bullseye AS builder
+ARG RUST_VERSION=1.99.1
+FROM rust:${RUST_VERSION}-trixie AS builder
 
 ENV USER=root
 
@@ -12,7 +12,7 @@ RUN cargo vendor >> /code/.cargo/config.toml
 COPY src /code/src
 RUN cargo build --release --offline
 
-FROM gcr.io/distroless/cc-debian11
+FROM gcr.io/distroless/cc-debian13
 
 ENV ADDRESS=0.0.0.0
 ENV PORT=8080

@@ -9,6 +9,6 @@ async fn handler(
     payload: web::Json<AccountCreate>,
 ) -> Result<HttpResponse, Error> {
     let mut conn = pool.acquire().await?;
-    let created = payload.execute(&mut conn).await?;
+    let created = payload.execute(&mut *conn).await?;
     Ok(HttpResponse::Created().json(created))
 }

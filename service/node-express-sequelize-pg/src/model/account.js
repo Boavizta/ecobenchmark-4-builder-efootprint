@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
     
     static statistics() {
       return sequelize.query(`
-          select id, login, count(list_id) as nb_list, round(avg(nb_tasks), 2) as avg_tasks
+          select id AS account_id, login AS account_login,
+                 count(list_id) AS list_count, round(avg(nb_tasks), 2) AS task_avg
           from (
               select account.id, account.login, list.id list_id, count(task.id) nb_tasks
               from account

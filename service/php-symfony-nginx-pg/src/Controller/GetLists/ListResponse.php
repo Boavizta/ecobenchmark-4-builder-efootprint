@@ -9,7 +9,7 @@ class ListResponse
 {
     public string $id;
     public string $name;
-    public array $tasks;
+    public array $tasks = [];
     public string $creation_date;
     public string $account_id;
 

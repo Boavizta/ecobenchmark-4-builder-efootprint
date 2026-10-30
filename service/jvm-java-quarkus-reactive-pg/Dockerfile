@@ -75,16 +75,16 @@
 #   accessed directly. (example: "foo.example.com,bar.example.com")
 #
 ###
-FROM eclipse-temurin:17-jdk-jammy as build
+FROM eclipse-temurin:25-jdk-noble AS build
 
 WORKDIR /workdir
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
-RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.1.2:go-offline
+RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.11.0:go-offline
 COPY src ./src
 RUN ./mvnw package -Dmaven.test.skip=true
 
-FROM registry.access.redhat.com/ubi8/openjdk-17:1.11
+FROM registry.access.redhat.com/ubi9/openjdk-25:latest
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
 
@@ -98,4 +98,3 @@ EXPOSE 8080
 USER 185
 ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
-

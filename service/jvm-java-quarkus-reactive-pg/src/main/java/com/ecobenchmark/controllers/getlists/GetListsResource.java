@@ -6,9 +6,9 @@ import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.Tuple;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.*;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,9 +51,9 @@ public class GetListsResource {
 
                         ListResponse mappedList = listResponseMap.putIfAbsent(listResponse.getId(), listResponse);
 
-                        if (mappedList != null) {
-                            TaskResponse taskResponse = TaskResponse.from(row);
-                            List<TaskResponse> tasks = mappedList.getTasks();
+                        TaskResponse taskResponse = TaskResponse.from(row);
+                        if (taskResponse.getId() != null) {
+                            List<TaskResponse> tasks = (mappedList != null ? mappedList : listResponse).getTasks();
                             tasks.add(taskResponse);
                         }
 

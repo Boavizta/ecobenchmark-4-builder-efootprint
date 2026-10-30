@@ -1,7 +1,7 @@
 package get_lists
 
 import (
-	"github.com/pkg/errors"
+	"fmt"
 )
 
 type GetListsByAccountId struct {
@@ -13,7 +13,7 @@ func (c *GetListsByAccountId) Execute(request GetListsRequest) ([]GetListsRespon
 	response, err := c.Storage.GetListsByAccountId(request)
 
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to get the lists of account id %s", request.AccountId.String())
+		return nil, fmt.Errorf("%s: %w", fmt.Sprintf("failed to get the lists of account id %s", request.AccountId.String()), err)
 	}
 
 	return response, nil

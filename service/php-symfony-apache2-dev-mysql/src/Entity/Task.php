@@ -24,7 +24,7 @@ class Task
     #[ORM\Column(type: 'text')]
     private $description;
 
-    #[ORM\Column(type: 'datetimetz', nullable: true)]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $creation_date;
 
     public function getId(): ?UuidV4

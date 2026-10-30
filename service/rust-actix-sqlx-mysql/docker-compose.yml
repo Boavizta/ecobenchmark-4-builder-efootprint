@@ -20,13 +20,15 @@ services:
     depends_on:
       - database
     environment:
-      - DATABASE_URL=postgres://ecobench:mysecretpassword@database:3306/ecobench
+      - DATABASE_URL=mysql://ecobench:mysecretpassword@database:3306/ecobench
       - DATABASE_POOL_MAX=20
     restart: unless-stopped
 
   database:
     image: jdrouet/eco-benchmark:database-mysql
-    build: ../../migrations
+    build:
+      context: ../../migrations
+      dockerfile: Dockerfile.mysql
     environment:
       - MYSQL_USER=ecobench
       - MYSQL_ROOT_PASSWORD=mysecretpassword

@@ -1,7 +1,7 @@
 package get_lists
 
 import (
-	"github.com/gofrs/uuid"
+	"github.com/gofrs/uuid/v5"
 	"time"
 )
 

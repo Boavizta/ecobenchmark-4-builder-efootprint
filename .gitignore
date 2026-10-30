@@ -1,8 +1,3 @@
-runner/eco-bench-runner
-
-results/*.json
-results/*.png
-
 *.code-worksapce
 
 #Karate
@@ -21,6 +16,8 @@ release.properties
 .classpath
 .settings/
 bin/
+!service/php-symfony-*/bin/
+!service/php-symfony-*/bin/console
 
 # IntelliJ
 .idea
@@ -48,3 +45,8 @@ nb-configuration.xml
 
 # Local environment
 .env
+
+# Reproducible benchmark artifacts and Python caches
+results/
+__pycache__/
+benchmark/hosts.local.json

@@ -11,6 +11,17 @@ The project is the next step of the original [eco-benchmark project](https://git
 
 ## How does it works?
 
+### Running benchmarks: local VMs or dedicated Linux servers
+
+The benchmark harness uses two Lima Linux VMs locally, or two existing Linux
+servers over SSH (including OVH dedicated servers).
+VM storage defaults to `/Volumes/Extension/ecobench-vms`. See
+[benchmark/README.md](benchmark/README.md) for setup, commands, result formats, and
+measurement limitations. VM runs measure resources/performance, not physical energy.
+
+The same Compose stack and k6 scenarios run in both environments. See the
+[SSH setup guide](benchmark/README.md#dedicated-linux-servers-over-ssh) for deployment.
+
 This repository contains  different benchmarking scenario to try to compare the energy consumption and server saturation for several set of languages, frameworks and db.
 
 The different scenario will be the following, for each set of languages, frameworks and db:
@@ -65,6 +76,9 @@ Exemple :
 - php-symfony-apache2-dev-pg
 
 ## Contributing
+
+For agent-assisted work, start with [AGENTS.md](AGENTS.md); it routes to the project
+scope, evidence rules, dated measurement snapshot, and e-footprint contract research.
 
 Everybody is more than welcome to contribute to this benchmark! Please check out the [Contributing guide](CONTRIBUTING.md) for guidelines about how to proceed.
 

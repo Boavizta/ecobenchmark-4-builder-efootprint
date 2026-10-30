@@ -1,4 +1,3 @@
-FROM postgres:14.2-bullseye
+FROM postgres:18.6-trixie
 
 COPY *.sql /docker-entrypoint-initdb.d/
-

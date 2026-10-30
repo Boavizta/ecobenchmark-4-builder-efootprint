@@ -20,7 +20,7 @@ class Account
     #[ORM\Column(type: 'text', nullable: true)]
     private $login;
 
-    #[ORM\Column(type: 'datetimetz', nullable: true)]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $creation_date;
 
     #[ORM\OneToMany(mappedBy: 'account', targetEntity: ListEntity::class)]

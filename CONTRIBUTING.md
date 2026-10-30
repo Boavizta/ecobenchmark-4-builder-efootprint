@@ -1,8 +1,10 @@
 # CONTRIBUTION GUIDE
 
-**TO BE UPDATED**
-
-*TODO : Add part to describe the role of each folder*
+The supported execution workflow is documented in [benchmark/README.md](benchmark/README.md).
+`benchmark/` owns orchestration and measurement, `service/` contains implementations,
+`migrations/` contains database schemas, and `test/` / `validator/` contain conformity tests.
+`runner/` retains historical workloads; `benchmark/full_services.py` runs the mixed
+journey across all implemented HTTP services with raw local resource observations.
 
 ## Service Contribution
 
@@ -38,7 +40,7 @@ Each service must respect :
 - a predefined set of SQL requests by API to respect.
 - for some service, algorithm to respect.
 
-Reference implementation is the [golang implementation](./service/go-pgx).
+Reference implementation is the [golang implementation](./service/go-pgx-pg).
 
 ### Acceptance criteria
 
@@ -116,55 +118,21 @@ for rowsList.Next() {
 	return stats, nil
 ```
 
-## Result analysis contribution
+## Benchmark and result contributions
 
-Target folders :
-- [/results](./results)
+Run `make test` before submitting orchestration changes. The shared lifecycle lives
+in `benchmark/ecobench.py`; transport-specific command construction lives in
+`benchmark/backends.py`. Add regression tests when changing either.
 
+For local execution use `make benchmark-up`, `make benchmark-prepare`, and
+`make benchmark-run`. For SSH deployment follow the dedicated-server setup guide.
+Only the Go/PostgreSQL reference service is currently integrated into the two-host
+Lima/SSH harness. For a one-run-per-service local Docker sweep, use
+`python3 benchmark/full_services.py --output results/full-run`; see the limitations
+and output formats in `benchmark/README.md`. Experimental branches changing the
+protocol, indexes, pagination, aggregation design, or fixture size are separate
+use cases, not silently interchangeable default-scope services.
 
-_Not available yet_
-
-## Runner contribution
-
-Target folders :
-- [/builder](./builder)
-- [/migrations](./migrations)
-- [/runner](./runner)
-- [/script](./script)
-
-_Not available yet_
-
-
-# To be Sorted
-
-## Workflow
-
-The complete workflow is based on docker images. Every image should be named as `<org>/service-<service_name>:<use_case>`.
-
-Each image can be built using the following command.
-
-```bash
-# oRG=jdrouet is used by default but can be changed by exporting a different variable.
-./builder/service.sh <name_of_your_service> <use_case>
-```
-
-## Starting the database
-
-### Postgres
-
-# to run the migrations when starting the database
---volume $(pwd)/migrations:/docker-entrypoint-initdb:ro \
-# today, the 30th of april 2022, this is the latest release
-postgres:14.2-bullseye
-
-```bash
-docker run -d \
-  --name eco-benchmark-database \
-  # to run the migrations when starting the database
-  --volume $(pwd)/migrations:/docker-entrypoint-initdb.d:ro \
-  --port 5432:5432 \
-  -e POSTGRES_PASSWORD=mysecretpassword \
-  postgres:14.2-bullseye
-
-export DATABASE_URL=postgresql://postgres:mysecretpassword@127.0.0.1:5432/postgres
-```
+Results are written under `results/` and are ignored by Git. Preserve raw observations,
+units, hardware/image metadata, and failure status when proposing analysis or export
+code. Never interpret CPU time as measured physical energy.

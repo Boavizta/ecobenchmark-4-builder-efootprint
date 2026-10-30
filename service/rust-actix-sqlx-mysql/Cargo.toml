@@ -6,11 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = { version = "4.0" }
-chrono = { version = "0.4", features = ["serde"] }
-num-traits = { version = "0.2.14" }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = { version = "1.0" }
-sqlx = { version = "0.5", features = ["chrono", "decimal", "mysql", "runtime-actix-rustls", "uuid"] }
-uuid = { version = "0.8.2", features = ["serde", "v4"] } # version blocked by sqlx
-
+actix-web = { version = "4.18.1" }
+chrono = { version = "0.4.45", features = ["serde"] }
+num-traits = { version = "0.2.19" }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = { version = "1.0.154" }
+sqlx = { version = "0.9.0", features = ["chrono", "rust_decimal", "mysql", "runtime-tokio", "tls-rustls", "uuid"] }
+uuid = { version = "1.29.0", features = ["serde", "v4"] }

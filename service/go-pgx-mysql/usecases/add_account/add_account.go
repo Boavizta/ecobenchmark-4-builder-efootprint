@@ -1,8 +1,8 @@
 package add_account
 
 import (
-	"github.com/gofrs/uuid"
-	"github.com/pkg/errors"
+	"fmt"
+	"github.com/gofrs/uuid/v5"
 	"time"
 )
 
@@ -13,7 +13,7 @@ type AddAccount struct {
 func (c *AddAccount) Execute(requestLogin string) (*AddAccountResponse, error) {
 	id, err := uuid.NewV4()
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to generate uuid")
+		return nil, fmt.Errorf("%s: %w", "failed to generate uuid", err)
 	}
 
 	accountResponse := &AddAccountResponse{
@@ -24,7 +24,7 @@ func (c *AddAccount) Execute(requestLogin string) (*AddAccountResponse, error) {
 
 	err = c.Storage.AddAccount(accountResponse)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to create the account %s", requestLogin)
+		return nil, fmt.Errorf("%s: %w", fmt.Sprintf("failed to create the account %s", requestLogin), err)
 	}
 
 	return accountResponse, nil

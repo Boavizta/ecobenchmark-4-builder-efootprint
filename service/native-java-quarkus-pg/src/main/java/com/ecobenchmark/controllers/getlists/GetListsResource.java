@@ -1,12 +1,12 @@
 package com.ecobenchmark.controllers.getlists;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.transaction.Transactional;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,9 +54,9 @@ public class GetListsResource {
 
             ListResponse mappedList = listResponseMap.putIfAbsent(listResponse.getId(), listResponse);
 
-            if(mappedList != null){
-                TaskResponse taskResponse = (TaskResponse) objects[1];
-                List<TaskResponse> tasks = mappedList.getTasks();
+            TaskResponse taskResponse = (TaskResponse) objects[1];
+            if(taskResponse != null && taskResponse.getId() != null){
+                List<TaskResponse> tasks = (mappedList != null ? mappedList : listResponse).getTasks();
                 tasks.add(taskResponse);
             }
 

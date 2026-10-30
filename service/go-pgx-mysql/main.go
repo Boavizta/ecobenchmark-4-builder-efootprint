@@ -1,9 +1,9 @@
 package main
 
 import (
-	echo "github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/pkg/errors"
+	"errors"
+	echo "github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 	"go_pgx/controllers/add_account"
 	"go_pgx/controllers/add_list"
 	"go_pgx/controllers/add_task_to_list"
@@ -35,7 +35,7 @@ func init() {
 func main() {
 	e := echo.New()
 
-	e.HEAD("/healthcheck", func(c echo.Context) error {
+	e.HEAD("/healthcheck", func(c *echo.Context) error {
 		return c.NoContent(http.StatusNoContent)
 	})
 	e.POST("/api/accounts", add_account.Controller(storageService))
@@ -44,7 +44,10 @@ func main() {
 	e.GET("/api/accounts/:account_id/lists", get_lists.Controller(storageService))
 	e.GET("/api/stats", get_stats.Controller(storageService))
 
-	e.Use(middleware.Logger())
+	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
-	e.Logger.Fatal(e.Start(":8080"))
+	if err := e.Start(":8080"); err != nil {
+		e.Logger.Error("server stopped", "error", err)
+		os.Exit(1)
+	}
 }

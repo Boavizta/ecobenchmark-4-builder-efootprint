@@ -61,7 +61,7 @@ class GetLists {
                     listResponse.tasks.add(
                         TaskResponse(
                             UUID.fromString(rs.getString("task_id")),
-                            rs.getString("name"),
+                            rs.getString("task_name"),
                             rs.getString("description"),
                             rs.getTimestamp("task_creation_date").toInstant()
                         )

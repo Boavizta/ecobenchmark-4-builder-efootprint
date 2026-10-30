@@ -5,7 +5,7 @@ import "go_pgx/common"
 type responseBody struct {
 	Id           string          `json:"id,omitempty"`
 	Name         string          `json:"name,omitempty"`
-	Tasks        []TaskBody      `json:"tasks,omitempty"`
+	Tasks        []TaskBody      `json:"tasks"`
 	CreationDate common.JSONDATE `json:"creation_date"`
 	AccountId    string          `json:"account_id,omitempty"`
 }

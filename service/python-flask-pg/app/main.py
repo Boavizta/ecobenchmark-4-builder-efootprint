@@ -33,7 +33,7 @@ def create_account(body: AccountRequest):
 @app.get('/api/accounts/<account_id>/lists')
 @validate()
 def get_account_lists(account_id: str, query: Pagination):
-    return [account_list.dict() for account_list in database.get_account_lists(account_id=account_id, page=query.page)]
+    return [account_list.model_dump() for account_list in database.get_account_lists(account_id=account_id, page=query.page)]
 
 
 @app.post('/api/accounts/<account_id>/lists')
@@ -51,7 +51,7 @@ def create_list_task(list_id: str, body: TaskRequest):
 @app.get('/api/stats')
 @validate()
 def get_stats():
-    return [stat.dict() for stat in database.get_stats()]
+    return [stat.model_dump() for stat in database.get_stats()]
 
 
 @app.get('/healthcheck')

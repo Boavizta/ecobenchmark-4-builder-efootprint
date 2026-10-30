@@ -24,7 +24,7 @@ class ListEntity
     #[ORM\Column(type: 'text', nullable: true)]
     private $name;
 
-    #[ORM\Column(type: 'datetimetz', nullable: true)]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $creation_date;
 
     #[ORM\OneToMany(mappedBy: 'list', targetEntity: Task::class)]

@@ -29,7 +29,9 @@ impl ListWithTasks {
                 let FlattenListWithTask { list, task } = flat;
                 let list_id = list.id.clone();
                 let entry = res.entry(list_id).or_insert(ListWithTasks::from(list));
-                entry.tasks.push(task);
+                if let Some(task) = task {
+                    entry.tasks.push(task);
+                }
                 res
             })
             .into_values()
@@ -45,6 +47,24 @@ pub struct ListList {
     size: usize,
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn left_join_without_task_preserves_empty_list() {
+        let list = List {
+            id: Uuid::new_v4(),
+            account_id: Uuid::new_v4(),
+            name: "empty".into(),
+            creation_date: chrono::Utc::now(),
+        };
+        let rows = ListWithTasks::aggregate(vec![FlattenListWithTask { list, task: None }]);
+        assert_eq!(rows.len(), 1);
+        assert!(rows[0].tasks.is_empty());
+    }
+}
+
 impl Default for ListList {
     fn default() -> Self {
         Self {
@@ -57,7 +77,7 @@ impl Default for ListList {
 #[derive(Debug)]
 struct FlattenListWithTask {
     list: List,
-    task: Task,
+    task: Option<Task>,
 }
 
 impl TryFrom<tokio_postgres::Row> for FlattenListWithTask {
@@ -72,12 +92,15 @@ impl TryFrom<tokio_postgres::Row> for FlattenListWithTask {
                 name: row.try_get(2)?,
                 creation_date: row.try_get(3)?,
             },
-            task: Task {
-                id: row.try_get(4)?,
-                list_id,
-                name: row.try_get(5)?,
-                description: row.try_get(6)?,
-                creation_date: row.try_get(7)?,
+            task: match row.try_get::<_, Option<Uuid>>(4)? {
+                Some(id) => Some(Task {
+                    id,
+                    list_id,
+                    name: row.try_get(5)?,
+                    description: row.try_get(6)?,
+                    creation_date: row.try_get(7)?,
+                }),
+                None => None,
             },
         })
     }
