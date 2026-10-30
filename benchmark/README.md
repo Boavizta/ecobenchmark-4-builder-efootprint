@@ -166,6 +166,70 @@ Cleanup failures are recorded in metadata and cause a nonzero exit, even if the
 measured workload passed its thresholds. Optional phase artifacts are fetched only
 for phases that started; already collected measurement summaries are not overwritten.
 
+## Generate outputs (no benchmark rerun)
+
+```sh
+python3 benchmark/export_outputs.py results/full-benchmark-20261029 \
+  --output results/presentation-and-footprint --legacy-csv
+# Multiple independent campaign/reference directories can be supplied before --output.
+```
+
+The output directory must be new. A ZIP is generated beside it. Exporting uses the
+Python standard library only, does not invoke Docker/SSH/k6, and never changes raw
+evidence. Repeated input paths are deduplicated by evidence identity.
+
+**Eco-benchmark:** `presentation.csv`, normalized `observations.json`,
+`repeat-statistics.csv`, per-cohort CPU SVG charts and `ecobenchmark.ipynb`.
+The notebook uses pandas and matplotlib (install separately in your notebook
+environment); open it with its working directory set to the generated directory.
+Application **plus database** CPU is included. CPU is cumulative seconds or mean
+cores, memory is bytes, HTTP durations are seconds. RAM is time-weighted and peaks
+use aligned, linearly interpolated samples on the overlapping window, not the sum
+of independently observed maxima. No measured energy is inferred from CPU counters.
+Physical-energy ingestion remains unsupported until synchronized provenance is
+available; simulated or bare `joules` inputs cannot become measured energy.
+
+Failed observations stay visible but are excluded from statistics/charts. Repeat
+statistics group by execution/workload/load/limits cohort, service and use case.
+`n=1` has no standard deviation; the notebook shows individual values instead of
+inventing boxplot uncertainty. CPU/operation in the full campaign means a mixed
+journey, **not a task**; partial in-flight journeys and collector overhead limit
+the interpretation. Absolute host-independent rankings are not established.
+
+Presentation references: [original slides](https://docs.google.com/presentation/d/15piYZbxdp_6H0mann5auFir79TZ6XfrwLZ13xHf53vE/edit)
+and the [original notebook](https://github.com/Boavizta/ecobenchmark-applicationweb-backend/blob/aeea2451de2e4fb83333d9cc8b7090e27b5ba022/results/ecobenchmark.ipynb).
+The new calculations deliberately fix the old notebook's doubled application CPU
+and do not reuse the old parser's timestamp-free sum of power samples as energy.
+The slide deck describes ten measurements per case; our existing campaign has
+one per service. The linked YouTube video did not provide an accessible transcript
+during this investigation; no claims depend on its unverified content.
+
+**e-footprint:** `efootprint.json` exports sourced provisional resource observations
+and `readiness.md` lists calibration blockers. It targets the current `Job` contract
+at commit `d69a2ca4842344b9f24bfddf4d7a3a8ed84c8bb6`: `cpu_core`, decimal
+`MB_ram`, `s`, `B` and `B_stored`. The current mixed campaign intentionally produces
+no loadable Job coefficients, per-instance service baseline, or `boost_coeff`.
+An atomic workload requires an explicit `metadata.workload` declaration with
+`kind="atomic"`, `operations_per_iteration=1`, and a matching `job_type`; equal
+HTTP/iteration counts alone do not prove task attribution. Old reference runs
+without that declaration remain conservatively unverified.
+
+`benchmark/footprint_output.py:build_job(profile, server)` is an optional integration
+interface for **separately calibrated** profiles, not an automatic fitter. It
+requires `status="calibrated"`, empty `blockers`, `simulation=false`, `name`, a
+`source` with `name`/`link`, and all six `job` quantities as `{value, unit}` using
+the exact units above (positive duration). It wraps values in upstream
+`SourceValue`/`Source` and constructs a `Job` on the supplied server. e-footprint
+must be installed by the caller; it is not a new exporter dependency. Interface
+tests mock that optional dependency, not a full upstream runtime integration.
+
+`--legacy-csv` writes `legacy-RESEARCH-ONLY.csv` with the historical columns, but
+leaves concurrency and unsafe per-request fits blank. This is a legacy-shaped
+research projection, **not a ready-to-load file** for the removed consumer, which
+assumed one-second requests and uncritically consumed strings. See
+[consumer/history research](research/e-footprint-contract.md) for pinned sources,
+your verified original benchmark contributions, and current/legacy distinctions.
+
 ## Interpretation and limitations
 
 **Lima runs are virtualized resource/performance experiments, not physical energy
